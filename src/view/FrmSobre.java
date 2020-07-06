@@ -74,6 +74,11 @@ public class FrmSobre extends javax.swing.JFrame {
 
         btnFinancas.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
         btnFinancas.setText("Finanças");
+        btnFinancas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFinancasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -142,6 +147,15 @@ public class FrmSobre extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Erro ao abrir link:\n" + e.getMessage());
         }
     }//GEN-LAST:event_btnDiegoFerreiraActionPerformed
+
+    private void btnFinancasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFinancasActionPerformed
+        try {
+            java.awt.Desktop.getDesktop().browse( new java.net.URI("https://github.com/danilo-dsf/java-planilha-financeira"));
+        }
+        catch (URISyntaxException | IOException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao abrir link:\n" + e.getMessage());
+        }
+    }//GEN-LAST:event_btnFinancasActionPerformed
 
     /**
      * @param args the command line arguments

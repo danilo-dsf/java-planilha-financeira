@@ -132,6 +132,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Finan&#xe7;as"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnFinancasActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
