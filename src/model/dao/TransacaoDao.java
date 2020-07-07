@@ -161,6 +161,67 @@ public class TransacaoDao {
         }
     }
     
+    public double verifyContaSaldo(Integer id) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        
+        try {
+            st = conn.prepareStatement("SELECT "
+                    + " COALESCE(sub.entrada - sub.saida, 0) AS total "
+                    + " FROM ( "
+                    + "	SELECT "
+                    + "		SUM(CASE WHEN t.natureza = 'E' THEN t.valor ELSE 0 END) AS entrada, "
+                    + "		SUM(CASE WHEN t.natureza = 'S' THEN t.valor ELSE 0 END) AS saida "
+                    + "	FROM transacoes t "
+                    + " WHERE t.id_conta = ?"
+                    + ") sub;");
+            st.setInt(1, id);
+            
+            rs = st.executeQuery();
+            
+            rs.next();
+            return rs.getDouble("total");
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+    
+    public double verifyContaSaldo(Integer idConta, Integer idTransacao) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        
+        try {
+            st = conn.prepareStatement("SELECT "
+                    + " COALESCE(sub.entrada - sub.saida, 0) AS total "
+                    + " FROM ( "
+                    + "	SELECT "
+                    + "		SUM(CASE WHEN t.natureza = 'E' THEN t.valor ELSE 0 END) AS entrada, "
+                    + "		SUM(CASE WHEN t.natureza = 'S' THEN t.valor ELSE 0 END) AS saida "
+                    + "	FROM transacoes t "
+                    + " WHERE t.id_conta = ? AND t.id <> ?"
+                    + ") sub;");
+            st.setInt(1, idConta);
+            st.setInt(2, idTransacao);
+            
+            rs = st.executeQuery();
+            
+            rs.next();
+            return rs.getDouble("total");
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+        }
+    }
+    
     private Transacao instantiateTransacao(ResultSet rs, Conta conta) throws SQLException {
         Transacao obj = new Transacao();
         obj.setId(rs.getInt("id"));

@@ -9,6 +9,7 @@ import db.DB;
 import db.DbConnectionData;
 import db.DbException;
 import db.factory.DbFactory;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
@@ -382,10 +383,21 @@ public class FrmMain extends javax.swing.JFrame implements DataChangeListener {
                 obj.setValor(Double.parseDouble(txtValor.getText().replace(",", ".")));
                 obj.setConta((Conta) cmbConta.getSelectedItem());
                 
+                double saldo = dao.verifyContaSaldo(obj.getConta().getId());
+                if (obj.getNatureza().equals("S") && obj.getValor() > saldo) {
+                    JOptionPane.showMessageDialog(null, "Operação Inválida!\n\n"
+                            + "A saída de $ " 
+                            + String.format("%.2f", obj.getValor()) 
+                            + " que está tentando cadastrar é superior ao seu saldo de $ " 
+                            + String.format("%.2f", saldo) 
+                            + " nessa conta!");
+                    return;
+                }
+                
                 dao.insert(obj);
                 JOptionPane.showMessageDialog(null, "Transação cadastrada com sucesso!");
                 readTblTransacoes();
-                clearFields();
+                clearFields();              
             }
             catch (ParseException | DbException e) {
                 JOptionPane.showMessageDialog(null, "Erro ao cadastrar transação:\n" + e.getMessage());
@@ -409,6 +421,15 @@ public class FrmMain extends javax.swing.JFrame implements DataChangeListener {
                     obj.setData(sdf.parse(txtData.getText()));
                     obj.setValor(Double.parseDouble(txtValor.getText().replace(",", ".")));
                     obj.setConta((Conta) cmbConta.getSelectedItem());
+                    
+                    double saldo = dao.verifyContaSaldo(obj.getConta().getId(), obj.getId());
+                    if (obj.getNatureza().equals("S") && obj.getValor() > saldo) {
+                        JOptionPane.showMessageDialog(null, "Operação Inválida!\n\n"
+                                + "Se você atualizar esse registro para uma saída de $ " 
+                                + String.format("%.2f", obj.getValor()) 
+                                + " essa conta ficará com saldo negativo!");
+                        return;
+                    }
                     
                     dao.update(obj);
                     JOptionPane.showMessageDialog(null, "Transação atualizada com sucesso!");
